@@ -55,7 +55,10 @@ public class iLove extends JavaPlugin
                     for (CraftPlayer player : playersInLove.keySet())
                     {
                         if (!player.isOnline())
+                        {
                             playersInLove.remove(player);
+                            continue;
+                        }
                         int current = playersInLove.get(player);
                         CraftOcelot o = (CraftOcelot) player.getWorld().spawn(player.getLocation(), Ocelot.class);
                         player.getHandle().world.broadcastEntityEffect(o.getHandle(), (byte) 7);
@@ -127,6 +130,12 @@ public class iLove extends JavaPlugin
         else if (!(sender instanceof CraftPlayer))
         {
             sender.sendMessage(ChatColor.RED + "You cannot perform this command from the console.");
+            return true;
+        }
+        
+        if(!sender.hasPermission("iLove.target") && target != sender)
+        {
+            sender.sendMessage(ChatColor.RED + "You do not have permissions to use /love on other players.");
             return true;
         }
         
