@@ -1,0 +1,9 @@
+name: iLove
+main: lishid.iLove
+version: 1.0.4
+author: lishid
+commands:
+  love:
+    description: Toggle love mode
+    usage: |
+           /<command> [TargetPlayer] [x=10] - Fall in love for x seconds, -1 means infinity
