@@ -19,11 +19,11 @@ package lishid;
 import java.util.WeakHashMap;
 
 import org.bukkit.ChatColor;
+import org.bukkit.EntityEffect;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.entity.CraftOcelot;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.entity.Ocelot;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -35,7 +35,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class iLove extends JavaPlugin
 {
     
-    WeakHashMap<CraftPlayer, Integer> playersInLove = new WeakHashMap<CraftPlayer, Integer>();
+    WeakHashMap<Player, Integer> playersInLove = new WeakHashMap<Player, Integer>();
     
     public void onDisable()
     {
@@ -46,13 +46,13 @@ public class iLove extends JavaPlugin
     
     public void onEnable()
     {
-        getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Runnable()
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
         {
             public void run()
             {
                 synchronized (playersInLove)
                 {
-                    for (CraftPlayer player : playersInLove.keySet())
+                    for (Player player : playersInLove.keySet())
                     {
                         if (!player.isOnline())
                         {
@@ -60,8 +60,8 @@ public class iLove extends JavaPlugin
                             continue;
                         }
                         int current = playersInLove.get(player);
-                        CraftOcelot o = (CraftOcelot) player.getWorld().spawn(player.getLocation(), Ocelot.class);
-                        player.getHandle().world.broadcastEntityEffect(o.getHandle(), (byte) 7);
+                        Wolf o = player.getWorld().spawn(player.getLocation(), Wolf.class);
+                        o.playEffect(EntityEffect.WOLF_HEARTS);
                         o.remove();
                         if (current > 1)
                         {
@@ -86,7 +86,7 @@ public class iLove extends JavaPlugin
     
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
     {
-        CraftPlayer target = null;
+        Player target = null;
         int duration = 10;
         if (args.length > 0)
         {
@@ -123,11 +123,11 @@ public class iLove extends JavaPlugin
             }
         }
         
-        if (target == null && sender instanceof CraftPlayer)
+        if (target == null && sender instanceof Player)
         {
-            target = (CraftPlayer) sender;
+            target = (Player) sender;
         }
-        else if (!(sender instanceof CraftPlayer))
+        else if (!(sender instanceof Player))
         {
             sender.sendMessage(ChatColor.RED + "You cannot perform this command from the console.");
             return true;
@@ -157,11 +157,11 @@ public class iLove extends JavaPlugin
         return true;
     }
     
-    public CraftPlayer getPlayer(String s)
+    public Player getPlayer(String s)
     {
         try
         {
-            return (CraftPlayer) getServer().getPlayer(s);
+            return getServer().getPlayer(s);
         }
         catch (Exception e)
         {
