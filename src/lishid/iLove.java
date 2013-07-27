@@ -32,30 +32,22 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  * @author lishid
  */
-public class iLove extends JavaPlugin
-{
+public class iLove extends JavaPlugin {
     
     WeakHashMap<Player, Integer> playersInLove = new WeakHashMap<Player, Integer>();
     
-    public void onDisable()
-    {
+    public void onDisable() {
         getServer().getScheduler().cancelAllTasks();
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println("[" + pdfFile.getName() + "] version " + pdfFile.getVersion() + " disabled!");
     }
     
-    public void onEnable()
-    {
-        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
-        {
-            public void run()
-            {
-                synchronized (playersInLove)
-                {
-                    for (Player player : playersInLove.keySet())
-                    {
-                        if (!player.isOnline())
-                        {
+    public void onEnable() {
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+            public void run() {
+                synchronized (playersInLove) {
+                    for (Player player : playersInLove.keySet()) {
+                        if (!player.isOnline()) {
                             playersInLove.remove(player);
                             continue;
                         }
@@ -63,16 +55,13 @@ public class iLove extends JavaPlugin
                         Wolf o = player.getWorld().spawn(player.getLocation(), Wolf.class);
                         o.playEffect(EntityEffect.WOLF_HEARTS);
                         o.remove();
-                        if (current > 1)
-                        {
+                        if (current > 1) {
                             playersInLove.put(player, current - 1);
                         }
-                        else if (current < 0 && player.hasPermission("iLove.infinite"))
-                        {
+                        else if (current < 0 && player.hasPermission("iLove.infinite")) {
                             playersInLove.put(player, current);
                         }
-                        else
-                        {
+                        else {
                             playersInLove.remove(player);
                         }
                     }
@@ -84,70 +73,55 @@ public class iLove extends JavaPlugin
         System.out.println("[" + pdfFile.getName() + "] version " + pdfFile.getVersion() + " enabled!");
     }
     
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args)
-    {
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player target = null;
         int duration = 10;
-        if (args.length > 0)
-        {
+        if (args.length > 0) {
             target = getPlayer(args[0]);
-            if(target == null && args.length == 1)
-            {
-                try
-                {
+            if (target == null && args.length == 1) {
+                try {
                     duration = Integer.parseInt(args[0]);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + args[0] + " not recognized. Please enter a player name or a number.");
                     return true;
                 }
             }
-            else if(target == null)
-            {
+            else if (target == null) {
                 sender.sendMessage(ChatColor.RED + "Player " + args[0] + " not found.");
                 return true;
             }
             
-            if (args.length > 1)
-            {
-                try
-                {
+            if (args.length > 1) {
+                try {
                     duration = Integer.parseInt(args[1]);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     sender.sendMessage(ChatColor.RED + args[1] + " is not a valid number.");
                     return true;
                 }
             }
         }
         
-        if (target == null && sender instanceof Player)
-        {
+        if (target == null && sender instanceof Player) {
             target = (Player) sender;
         }
-        else if (!(sender instanceof Player))
-        {
+        else if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "You cannot perform this command from the console.");
             return true;
         }
         
-        if(!sender.hasPermission("iLove.target") && target != sender)
-        {
+        if (!sender.hasPermission("iLove.target") && target != sender) {
             sender.sendMessage(ChatColor.RED + "You do not have permissions to use /love on other players.");
             return true;
         }
         
-        synchronized (playersInLove)
-        {
-            if (!sender.hasPermission("iLove.love"))
-            {
+        synchronized (playersInLove) {
+            if (!sender.hasPermission("iLove.love")) {
                 sender.sendMessage("Sadly, you are not allowed to display your affection.");
                 return true;
             }
-            if (playersInLove.containsKey(target))
-            {
+            if (playersInLove.containsKey(target)) {
                 playersInLove.remove(target);
                 return true;
             }
@@ -157,26 +131,20 @@ public class iLove extends JavaPlugin
         return true;
     }
     
-    public Player getPlayer(String s)
-    {
-        try
-        {
+    public Player getPlayer(String s) {
+        try {
             return getServer().getPlayer(s);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return null;
         }
     }
     
-    public int getNumber(String s)
-    {
-        try
-        {
+    public int getNumber(String s) {
+        try {
             return Integer.parseInt(s);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             return 0;
         }
     }
